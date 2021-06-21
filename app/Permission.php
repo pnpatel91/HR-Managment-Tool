@@ -44,6 +44,16 @@ class Permission extends ModelsPermission
             'create holiday',
             'edit holiday',
             'delete holiday',
+
+            'view leave - admin',
+            'create leave - admin',
+            'edit leave - admin',
+            'delete leave - admin',
+
+            'view leave - employee',
+            'create leave - employee',
+            'edit leave - employee',
+            'delete leave - employee',
         ];
     }
 

@@ -122,4 +122,18 @@ class User extends Authenticatable
     {
         return $this->departments->pluck('id');
     }
+
+    /**
+     * Get the employee leave.
+     */
+    public function leave_employee(){
+        return $this->belongsTo(Leave::class,'employee_id')->with('branch');
+    }
+
+    /**
+     * Get the approver leave.
+     */
+    public function leave_approved_by(){
+        return $this->belongsTo(Leave::class,'approved_by')->with('branch');
+    }
 }

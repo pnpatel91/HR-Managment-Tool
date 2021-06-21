@@ -8,6 +8,7 @@ use App\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BranchStoreRequest;
+use App\Http\Requests\BranchUpdateRequest;
 use App\Traits\UploadTrait;
 
 use Illuminate\Support\Str;
@@ -186,11 +187,11 @@ class BranchController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\BranchUpdateRequest  $request
      * @param  \App\Branch  $branch
      * @return \Illuminate\Http\Response
      */
-    public function update(BranchStoreRequest $request, Branch $branch)
+    public function update(BranchUpdateRequest $request, Branch $branch)
     {
 
         try {
@@ -247,6 +248,9 @@ class BranchController extends Controller
     public function destroy(Branch $branch)
     {
         $branch->users()->detach();
+
+        // delete related leave   
+        $branch->leaves()->delete();
 
         // delete branch
         $branch->delete();

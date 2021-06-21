@@ -37,7 +37,7 @@ class BranchFactory extends Factory
             //'longitude' => $faker->longitude($min = -180, $max = 180),
             'latitude' => '51.542411',
             'longitude' => '-0.2708499',
-            'radius' => 1000,
+            'radius' => 5000,
             'company_id' => Company::inRandomOrder()->first()->id,
             'created_by' => User::inRandomOrder()->first()->id,
             'updated_by' => User::inRandomOrder()->first()->id,

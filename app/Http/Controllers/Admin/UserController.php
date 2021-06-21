@@ -138,4 +138,24 @@ class UserController extends Controller
             return asset('/public/image/default_profile.jpg');
         }
     }
+
+    /**
+     * Display the specified branch user DropDown (For Ajax DropDown).
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    function get_users_by_branch( Request $request )
+    {
+          $this->validate( $request, [ 'id' => 'required' ] );
+          $users = User::whereHas('branches', function($q) use ($request) { $q->where('branch_id', $request->id); })->get();
+          
+          //you can handle output in different ways, I just use a custom filled array. you may pluck data and directly output your data.
+          $output = [];
+          foreach( $users as $user )
+          {
+             $output[$user->id] = $user->name;
+          }
+          return $output;
+    }
 }

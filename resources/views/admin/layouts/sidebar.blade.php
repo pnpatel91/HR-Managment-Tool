@@ -114,6 +114,24 @@
                             </a>
                         </li>
                         @endcan 
+
+                        @can('view leave - admin')
+                        <li class="nav-item">
+                            <a href="{{ url('admin/leave') }}" class="nav-link {{ Route::is('admin.leave.*') || Route::is('admin.leave.*')  ? 'active' : '' }}">
+                                <i class="fas fa-briefcase nav-icon" aria-hidden="true"></i>
+                                <p>Leave - Admin</p>
+                            </a>
+                        </li>
+                        @endcan 
+
+                        @can('view leave - employee')
+                        <li class="nav-item">
+                            <a href="{{ url('admin/leave-employee') }}" class="nav-link {{ Route::is('admin.leave-employee.*') || Route::is('admin.leave-employee.*')  ? 'active' : '' }}">
+                                <i class="fas fa-briefcase nav-icon" aria-hidden="true"></i>
+                                <p>Leave - Employee</p>
+                            </a>
+                        </li>
+                        @endcan 
                     </ul>
                 </li>
                 

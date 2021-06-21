@@ -8,6 +8,7 @@ use App\Image;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyStoreRequest;
+use App\Http\Requests\CompanyUpdateRequest;
 use App\Traits\UploadTrait;
 
 use Illuminate\Support\Str;
@@ -158,11 +159,11 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Request\CompanyUpdateRequest  $request
      * @param  \App\Company  $company
      * @return \Illuminate\Http\Response
      */
-    public function update(CompanyStoreRequest $request, Company $company)
+    public function update(CompanyUpdateRequest $request, Company $company)
     {
         try {
 

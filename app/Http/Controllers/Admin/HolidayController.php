@@ -7,6 +7,7 @@ use App\Branch;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HolidayStoreRequest;
+use App\Http\Requests\HolidayUpdateRequest;
 use App\Traits\UploadTrait;
 
 use Illuminate\Support\Str;
@@ -135,11 +136,11 @@ class HolidayController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\HolidayUpdateRequest  $request
      * @param  \App\Holiday  $holiday
      * @return \Illuminate\Http\Response
      */
-    public function update(HolidayStoreRequest $request, Holiday $holiday)
+    public function update(HolidayUpdateRequest $request, Holiday $holiday)
     {
         try {
 

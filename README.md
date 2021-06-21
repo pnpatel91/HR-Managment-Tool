@@ -19,6 +19,10 @@ This is laravel admin project sample include below list
   - One attendance To One User (With created_by in attendance table)
 - rota (employee job time schedule)
   - One rota To One User (With user_id in attendance table)
+- Leave
+  - One leave To Many branchs (With branch_id in leave table)
+  - One leave To One User (With employee_id in leave table)
+  - One leave To One User (With approved_by in leave table)
 - Eloquent: Relationships
   - One To Many
   - Many To Many

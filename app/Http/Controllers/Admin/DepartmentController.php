@@ -7,6 +7,7 @@ use App\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepartmentStoreRequest;
+use App\Http\Requests\DepartmentUpdateRequest;
 use App\Traits\UploadTrait;
 
 use Illuminate\Support\Str;
@@ -92,7 +93,11 @@ class DepartmentController extends Controller
      */
     public function create()
     {
-        $users = User::all('id', 'name');
+        if(!auth()->user()->hasRole('superadmin')){
+            $users = User::select('id', 'name')->whereHas('branches', function($q) use ($branch_id) { $q->where('branch_id', $branch_id); })->get();
+        }else{
+            $users = User::all('id', 'name');
+        }
         return view('admin.department.create', compact("users"));
     }
 
@@ -152,7 +157,11 @@ class DepartmentController extends Controller
      */
     public function edit(Department $department)
     {
-        $users = User::all('id', 'name');
+        if(!auth()->user()->hasRole('superadmin')){
+            $users = User::select('id', 'name')->whereHas('branches', function($q) use ($branch_id) { $q->where('branch_id', $branch_id); })->get();
+        }else{
+            $users = User::all('id', 'name');
+        }
         $departmentUsers = $department->users->pluck('id')->toArray();
         return view('admin.department.edit', compact('department', 'users', 'departmentUsers'));
     }
@@ -160,11 +169,11 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Request\DepartmentStoreRequest  $request
+     * @param  \App\Http\Request\DepartmentUpdateRequest  $request
      * @param  \App\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function update(DepartmentStoreRequest $request, Department $department)
+    public function update(DepartmentUpdateRequest $request, Department $department)
     {
         try {
 

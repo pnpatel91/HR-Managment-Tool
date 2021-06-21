@@ -53,8 +53,16 @@ class Branch extends Model
     /**
      * The holidays that belong to the branch.
      */
-    public function branches()
+    public function holidays()
     {
         return $this->belongsToMany(Holiday::class, 'holidays_has_branches');
+    }
+
+    /**
+     * Get all of the leaves for the branch.
+     */
+    public function leaves()
+    {
+        return $this->hasMany(Leave::class);
     }
 }

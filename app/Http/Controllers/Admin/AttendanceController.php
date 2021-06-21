@@ -8,6 +8,7 @@ use App\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttendanceStoreRequest;
+use App\Http\Requests\AttendanceUpdateRequest;
 use App\Traits\UploadTrait;
 
 use Illuminate\Support\Str;
@@ -38,8 +39,14 @@ class AttendanceController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        $branches = Branch::all();
+        if(!auth()->user()->hasRole('superadmin')){
+            $branch_id = auth()->user()->getBranchIdsAttribute();
+            $branches = Branch::whereIn('id',$branch_id)->get();
+            $users = User::whereHas('branches', function($q) use ($attendance) { $q->where('branch_id', $attendance->branch_id); })->get();
+        }else{
+            $branches = Branch::all();
+            $users = User::all();
+        }
         return view('admin.attendance.index', compact("users","branches"));
     }
 
@@ -120,26 +127,6 @@ class AttendanceController extends Controller
         }
 
         return view('admin.attendance.create', compact("branches"));
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    function user( Request $request )
-    {
-          $this->validate( $request, [ 'id' => 'required' ] );
-          $users = User::whereHas('branches', function($q) use ($request) { $q->where('branch_id', $request->id); })->get();
-          
-          //you can handle output in different ways, I just use a custom filled array. you may pluck data and directly output your data.
-          $output = [];
-          foreach( $users as $user )
-          {
-             $output[$user->id] = $user->name;
-          }
-          return $output;
     }
 
     /**
@@ -296,11 +283,11 @@ class AttendanceController extends Controller
         if(!auth()->user()->hasRole('superadmin')){
             $branch_id = auth()->user()->getBranchIdsAttribute();
             $branches = Branch::whereIn('id',$branch_id)->get();
+            $users = User::whereHas('branches', function($q) use ($attendance) { $q->where('branch_id', $attendance->branch_id); })->get();
         }else{
             $branches = Branch::all();
+            $users = User::all();
         }
-
-        $users = User::whereHas('branches', function($q) use ($attendance) { $q->where('branch_id', $attendance->branch_id); })->get();
 
         return view('admin.attendance.edit', compact('attendance', 'branches', 'users'));
     }
@@ -312,7 +299,7 @@ class AttendanceController extends Controller
      * @param  \App\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Attendance $attendance)
+    public function update(AttendanceUpdateRequest $request, Attendance $attendance)
     {
         try {
                 if (empty($attendance)) {

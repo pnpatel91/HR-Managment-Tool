@@ -24,6 +24,7 @@ Route::group([
 
     // User Routes
     Route::resource('/user', 'UserController');
+    Route::post( 'user/ajax/users', 'UserController@get_users_by_branch' )->name('user.ajax.users'); // Get user option by branch in ajax
 
     // Role Routes
     Route::put('role/{id}/update', 'RoleController@update');
@@ -41,7 +42,6 @@ Route::group([
     Route::resource('attendance', 'AttendanceController');
     Route::post('attendance/store_admin', 'AttendanceController@store_admin')->name('attendance.store_admin'); // For Admin 
     Route::get('attendance/ajax/data', 'AttendanceController@datatables'); // For Datatables
-    Route::post( 'attendance/ajax/user', 'AttendanceController@user' )->name('attendance.ajax.user'); // Get user option by branch in ajax
     Route::post( 'attendance/ajax/status', 'AttendanceController@status' )->name('attendance.ajax.status'); // Get status option by branch in ajax
 
     // Department Routes
@@ -50,6 +50,14 @@ Route::group([
 
     // Department Routes
     Route::resource('holiday', 'HolidayController');
+
+    // Leave - Admin Routes
+    Route::resource('leave', 'LeaveAdminController');
+    Route::get('leave/ajax/data', 'LeaveAdminController@datatables'); // For Datatables
+
+    // Leave - Employee Routes
+    Route::resource('leave-employee', 'LeaveEmployeeController');
+    Route::get('leave-employee/ajax/data', 'LeaveEmployeeController@datatables'); // For Datatables
 
 });
 

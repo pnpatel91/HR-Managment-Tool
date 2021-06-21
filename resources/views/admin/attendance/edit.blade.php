@@ -83,7 +83,7 @@
         var id = $(this).val();
         
         $.ajax({
-          url : '{{ route('admin.attendance.ajax.user') }}',
+           url : '{{ route('admin.user.ajax.users') }}',
           data: {
             "_token": "{{ csrf_token() }}",
             "id": id

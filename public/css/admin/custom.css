@@ -420,3 +420,12 @@ ol li {
     color: #f8f9fa;
 }
 
+
+.btn.btn-rounded {
+    border-radius: 50px;
+}
+.btn-white {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color: #333;
+}
