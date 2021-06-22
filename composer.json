@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.0",
         "nesbot/carbon": "^2.49",
+        "qoraiche/laravel-mail-editor": "^3.2",
         "spatie/laravel-permission": "^3.11",
         "stevebauman/location": "^6.1",
         "techguy/laravel-ckeditor": "^1.4",

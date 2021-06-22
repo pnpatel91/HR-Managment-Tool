@@ -33,6 +33,7 @@ This is laravel admin project sample include below list
 - [spatie/laravel-permission](https://github.com/spatie/laravel-permission)
 - [AdminLTE3](https://adminlte.io/themes/v3/)
 - [stevebauman/location](https://github.com/stevebauman/location)
+- [Qoraiche/laravel-mail-editor](https://github.com/Qoraiche/laravel-mail-editor)
 
 ## Installation
 
@@ -42,6 +43,7 @@ This is laravel admin project sample include below list
 - php artisan key:generate
 - setup database in .env
 - php artisan migrate --seed
+- move public/vendor/ all folders to [ROOT]/vendor
 - php artisan serve
 
 The site will run localhost:8000

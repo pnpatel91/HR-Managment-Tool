@@ -132,6 +132,16 @@
                             </a>
                         </li>
                         @endcan 
+
+                        @if(auth()->user()->hasRole('superadmin'))
+                        <li class="nav-item">
+                            <a href="{{ url('maileclipse') }}" class="nav-link">
+                                <i class="fas fa-envelope-open-text nav-icon" aria-hidden="true"></i>
+                                <p>Email Templates</p>
+                            </a>
+                        </li>
+                        @endif
+
                     </ul>
                 </li>
                 

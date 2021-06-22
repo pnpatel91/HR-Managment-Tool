@@ -134,7 +134,7 @@ return [
 
         'enabled' => env('LOCATION_TESTING', true),
 
-        'ip' => '66.102.0.0',
+        'ip' => '62.30.13.57',
 
     ],
 

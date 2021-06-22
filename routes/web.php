@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NotificationController;
 
 Auth::routes();
 
@@ -13,7 +14,11 @@ Route::group([
     'middleware' => ['auth']
 ], function () {
     Route::get('/', 'DashboardController@index');
-    
+    //Notifications
+    Route::view('notifications-dropdown-menu', 'admin.layouts.notifications')->name('notifications-dropdown-menu');
+    Route::get('/notificationMarkAsRead/{id}', 'DashboardController@notificationMarkAsRead');
+    Route::get('/notificationMarkAllAsRead/{id}', 'DashboardController@notificationMarkAllAsRead');
+
     // Profile Routes
     Route::view('profile', 'admin.profile.index')->name('profile.index');
     Route::view('profile/edit', 'admin.profile.edit')->name('profile.edit');

@@ -7,9 +7,10 @@ use App\User;
 use App\Branch;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LeaveStoreRequest;
-use App\Http\Requests\LeaveUpdateRequest;
+use App\Http\Requests\LeaveEmployeeStoreRequest;
+use App\Http\Requests\LeaveEmployeeUpdateRequest;
 use App\Traits\UploadTrait;
+use App\Notifications\leavesNotification;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use JeroenDesloovere\Distance\Distance;
 use Carbon\Carbon;
+use Notification;
 
 class LeaveEmployeeController extends Controller
 {
@@ -54,7 +56,7 @@ class LeaveEmployeeController extends Controller
                         }
 
                         if (auth()->user()->can('delete leave - admin')){
-                            $html.= '<form method="post" class="float-left delete-form" action="'.  route('admin.leave-employee.destroy', ['leave_employee' => $data->id ]) .'"><input type="hidden" name="_token" value="'. Session::token() .'"><input type="hidden" name="_method" value="delete"><button type="submit" class="btn btn-danger btn-sm"><span tooltip="Delete" flow="right"><i class="fas fa-trash"></i></span></button></form>';
+                            $html.= '<form method="post" class="float-left delete-form" action="'.  route('admin.leave-employee.destroy', ['leave_employee' => $data->id ]) .'"><input type="hidden" name="_token" value="'. Session::token() .'"><input type="hidden" name="_method" value="delete"><button type="submit" class="btn btn-danger btn-sm"><span tooltip="Delete" flow="up"><i class="fas fa-trash"></i></span></button></form>';
                         }
 
                         return $html; 
@@ -114,7 +116,7 @@ class LeaveEmployeeController extends Controller
      * @param  \App\Http\Request\LeaveStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(LeaveStoreRequest $request)
+    public function store(LeaveEmployeeStoreRequest $request)
     {
         try {
             
@@ -133,6 +135,23 @@ class LeaveEmployeeController extends Controller
                 $leave->half_day = $request->half_day;
                 $leave->status = 'New';
                 $leave->save();
+
+                /*NOTIFICATION CREATE [START]*/
+                $sender = User::find($leave->employee_id);
+                $receiver = User::find($leave->approved_by);
+                $leaveData = [
+                    'name' => 'leave' ,
+                    'body' => 'You received a leave.',
+                    'thanks' => 'Thank you',
+                    'leaveUrl' => url('admin/leave'),
+                    'leave_id' => $leave->id,
+                    'employee_id' => $sender->id,
+                    'employee_name' => $sender->name,
+                    'text' => 'added new'
+                ];
+
+                Notification::send($receiver, new leavesNotification($leaveData));
+                /*NOTIFICATION CREATE [END]*/
 
                 //Session::flash('success', 'Your leave has been confirmed successfully.');
                 //return redirect()->back();
@@ -196,7 +215,7 @@ class LeaveEmployeeController extends Controller
      * @param  \App\Leave  $leave
      * @return \Illuminate\Http\Response
      */
-    public function update(LeaveUpdateRequest $request, Leave $leave_employee)
+    public function update(LeaveEmployeeUpdateRequest $request, Leave $leave_employee)
     {
         try {
 

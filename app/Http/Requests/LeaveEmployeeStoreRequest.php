@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LeaveUpdateRequest extends FormRequest
+class LeaveEmployeeStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,6 @@ class LeaveUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'employee_id' => ['required'],
             'branch_id' => ['required'],
             'approved_by' => ['required'],
             'leave_type' => ['required'],

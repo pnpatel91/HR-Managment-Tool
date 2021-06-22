@@ -128,3 +128,5 @@ function showPositionNavbar(position) {
     document.getElementById("longitudeNavbar").value= position.coords.longitude;
 }
 getLocationNavbar();
+
+

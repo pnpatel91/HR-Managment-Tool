@@ -39,6 +39,7 @@ class AttendanceController extends Controller
      */
     public function index()
     {
+
         if(!auth()->user()->hasRole('superadmin')){
             $branch_id = auth()->user()->getBranchIdsAttribute();
             $branches = Branch::whereIn('id',$branch_id)->get();
@@ -79,7 +80,7 @@ class AttendanceController extends Controller
                         }
 
                         if (auth()->user()->can('delete attendance')){
-                            $html.= '<form method="post" class="float-left delete-form" action="'.  route('admin.attendance.destroy', ['attendance' => $data->id ]) .'"><input type="hidden" name="_token" value="'. Session::token() .'"><input type="hidden" name="_method" value="delete"><button type="submit" class="btn btn-danger btn-sm"><span tooltip="Delete" flow="right"><i class="fas fa-trash"></i></span></button></form>';
+                            $html.= '<form method="post" class="float-left delete-form" action="'.  route('admin.attendance.destroy', ['attendance' => $data->id ]) .'"><input type="hidden" name="_token" value="'. Session::token() .'"><input type="hidden" name="_method" value="delete"><button type="submit" class="btn btn-danger btn-sm"><span tooltip="Delete" flow="up"><i class="fas fa-trash"></i></span></button></form>';
                         }
 
                         return $html; 
@@ -163,6 +164,18 @@ class AttendanceController extends Controller
     {
         try {
 
+            if($request->latitude==''){
+                $request_latitude = $this->get_location()->latitude;
+            }else{
+                $request_latitude = $request->latitude;
+            }
+
+            if($request->longitude==''){
+                $request_longitude = $this->get_location()->longitude;
+            }else{
+                $request_longitude = $request->longitude;
+            }
+
             $user = User::find(auth()->user()->id);
             $branches = $user->branches;
             foreach ($branches as $key => $branch) {
@@ -172,21 +185,19 @@ class AttendanceController extends Controller
                 $distance = Distance::between(
                     $branch_latitude,
                     $branch_longitude,
-                    $request->latitude,
-                    $request->longitude
+                    $request_latitude,
+                    $request_longitude
                 );
 
                 $distance = $distance*1000; // distance convert into kilometers to meters
 
-                // dump data
-                //echo 'Distance between the two locations = ' . $distance . ' m';
                 if($branch->radius >= $distance){
 
                     $attendance = new Attendance();
                     $attendance->status = $request->status;
                     $attendance->distance = $distance;
-                    $attendance->latitude = $request->latitude;
-                    $attendance->longitude = $request->longitude;
+                    $attendance->latitude = $request_latitude;
+                    $attendance->longitude = $request_longitude;
                     $attendance->ip_address = $request->ip();
                     $attendance->branch_id = $branch->id;
                     $attendance->created_by = auth()->user()->id;
@@ -199,8 +210,8 @@ class AttendanceController extends Controller
                 }
             }
 
-            Session::flash('failed', 'You are away from your branch.');
-            return redirect()->back()->withErrors('You are away from your branch.');
+            Session::flash('failed', 'You are away from your branch, Distance between the two locations = ' . $distance . ' m');
+            return redirect()->back()->withErrors('You are away from your branch, Distance between the two locations = ' . $distance . ' m');
 
         } catch (\Exception $exception) {
 
@@ -314,8 +325,8 @@ class AttendanceController extends Controller
 
                 $attendance->status = str_replace(' ', '_', $request->status);
                 $attendance->distance = 0;
-                $attendance->latitude = $branch->latitude;
-                $attendance->longitude = $branch->longitude;
+                //$attendance->latitude = $branch->latitude;
+                //$attendance->longitude = $branch->longitude;
                 $attendance->ip_address = $request->ip();
                 $attendance->branch_id = $request->branch_id;
                 $attendance->created_by = $request->user_id;
@@ -359,5 +370,14 @@ class AttendanceController extends Controller
         return response()->json([
             'success' => 'Attendance deleted successfully.' // for status 200
         ]);
+    }
+
+
+    public function get_location()
+    {
+        $ip = \Request::ip();
+        if($ip=='::1'){$ip='';}
+        $data = \Location::get($ip);
+        return $data;
     }
 }

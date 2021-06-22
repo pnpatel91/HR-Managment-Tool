@@ -10,6 +10,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LeaveStoreRequest;
 use App\Http\Requests\LeaveUpdateRequest;
 use App\Traits\UploadTrait;
+use App\Notifications\leavesNotification;
+use App\Mail\LeavesNotificationMail;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +22,8 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use JeroenDesloovere\Distance\Distance;
 use Carbon\Carbon;
+use Notification;
+use Mail;
 
 class LeaveAdminController extends Controller
 {
@@ -33,7 +37,7 @@ class LeaveAdminController extends Controller
         if(!auth()->user()->hasRole('superadmin')){
             $branch_id = auth()->user()->getBranchIdsAttribute();
             $branches = Branch::whereIn('id',$branch_id)->get();
-            $users = User::whereHas('branches', function($q) use ($attendance) { $q->where('branch_id', $attendance->branch_id); })->get();
+            $users = User::whereHas('branches', function($q) use ($branch_id) { $q->whereIn('branch_id', $branch_id); })->get();
         }else{
             $branches = Branch::all();
             $users = User::all();
@@ -69,7 +73,7 @@ class LeaveAdminController extends Controller
                         }
 
                         if (auth()->user()->can('delete leave - admin')){
-                            $html.= '<form method="post" class="float-left delete-form" action="'.  route('admin.leave.destroy', ['leave' => $data->id ]) .'"><input type="hidden" name="_token" value="'. Session::token() .'"><input type="hidden" name="_method" value="delete"><button type="submit" class="btn btn-danger btn-sm"><span tooltip="Delete" flow="right"><i class="fas fa-trash"></i></span></button></form>';
+                            $html.= '<form method="post" class="float-left delete-form" action="'.  route('admin.leave.destroy', ['leave' => $data->id ]) .'"><input type="hidden" name="_token" value="'. Session::token() .'"><input type="hidden" name="_method" value="delete"><button type="submit" class="btn btn-danger btn-sm"><span tooltip="Delete" flow="up"><i class="fas fa-trash"></i></span></button></form>';
                         }
 
                         return $html; 
@@ -154,6 +158,29 @@ class LeaveAdminController extends Controller
                 $leave->status = 'New';
                 $leave->save();
 
+                /*NOTIFICATION CREATE [START]*/
+                $sender = User::find($leave->employee_id);
+                $receiver = User::find($leave->approved_by);
+                $leaveData = [
+                    'name' => 'leave' ,
+                    'subject' => 'Leave Notification' ,
+                    'body' => 'You received a leave.',
+                    'thanks' => 'Thank you',
+                    'leaveUrl' => url('admin/leave'),
+                    'leave_id' => $leave->id,
+                    'employee_id' => $sender->id,
+                    'employee_name' => $sender->name,
+                    'text' => 'added new'
+                ];
+
+                Notification::send($receiver, new leavesNotification($leaveData));
+                /*NOTIFICATION CREATE [END]*/
+
+                $email = 'parth.onfuro@gmail.com';
+          
+                Mail::to($email)->send(new LeavesNotificationMail($leaveData));
+                
+
                 //Session::flash('success', 'Your leave has been confirmed successfully.');
                 //return redirect()->back();
 
@@ -231,6 +258,7 @@ class LeaveAdminController extends Controller
                 ]);   
             }
 
+            $old_status = $leave->status;
             $leave_date = explode(' - ', $request->leave_date);
             $leave->employee_id = $request->employee_id;
             $leave->approved_by = $request->approved_by;
@@ -244,6 +272,26 @@ class LeaveAdminController extends Controller
             $leave->half_day = $request->half_day;
             $leave->status = $request->status;
             $leave->save();
+
+            /*NOTIFICATION CREATE [START]*/
+            if($old_status != $leave->status){
+                $sender = User::find($leave->approved_by);
+                $receiver = User::find($leave->employee_id);
+                if($leave->status=='New'){$leave->status='on hold';}
+                $leaveData = [
+                    'name' =>  Str::lower($leave->status),
+                    'body' => 'You received a leave.',
+                    'thanks' => 'Thank you',
+                    'leaveUrl' => url('admin/leave-employee'),
+                    'leave_id' => $leave->id,
+                    'employee_id' => $sender->id,
+                    'employee_name' => $sender->name,
+                    'text' => 'your leave has been'
+                ];
+
+                Notification::send($receiver, new leavesNotification($leaveData));
+            }
+            /*NOTIFICATION CREATE [END]*/
 
             //Session::flash('success', 'A branch updated successfully.');
             //return redirect('admin/branch');

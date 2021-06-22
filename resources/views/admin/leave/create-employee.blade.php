@@ -15,7 +15,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <form action="{{ route('admin.leave.store') }}" method="post" id="popup-form" >
+                    <form action="{{ route('admin.leave-employee.store') }}" method="post" id="popup-form" >
                         @csrf
 
                         <div class="form-group">
