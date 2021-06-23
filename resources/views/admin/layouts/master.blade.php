@@ -195,15 +195,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- CUSTOM JS -->
         <script src="{{ asset('public/js/admin/custom.js') }}"></script>
         <script src="{{ asset('public/js/admin/customUserRole.js') }}"></script>
-
         <script type="text/javascript">
             function loadNotificationsDropdownMenu(){
                 $('#Notifications-Dropdown-Menu').load("{{ route('admin.notifications-dropdown-menu') }}");
             }
-
             loadNotificationsDropdownMenu();
             setInterval(function(){
-                loadNotificationsDropdownMenu()
+                //loadNotificationsDropdownMenu();
             }, 10000);
         </script>
 

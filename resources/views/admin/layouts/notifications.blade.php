@@ -2,7 +2,7 @@
     <i class="far fa-bell"></i>
     <span class="badge badge-warning navbar-badge">{{count(auth()->user()->unreadNotifications)}}</span>
 </a>
-<div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+<div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto" style="height: 235px;">
     <span class="dropdown-header">{{count(auth()->user()->unreadNotifications)}} Notifications</span>
     <div class="dropdown-divider"></div>
     @inject('DashboardController', 'App\Http\Controllers\Admin\DashboardController')

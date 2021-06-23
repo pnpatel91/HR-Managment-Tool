@@ -11,6 +11,7 @@ use App\Http\Requests\LeaveEmployeeStoreRequest;
 use App\Http\Requests\LeaveEmployeeUpdateRequest;
 use App\Traits\UploadTrait;
 use App\Notifications\leavesNotification;
+use App\Mail\LeavesNotificationMail;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,7 @@ use Illuminate\Http\Request;
 use JeroenDesloovere\Distance\Distance;
 use Carbon\Carbon;
 use Notification;
+use Mail;
 
 class LeaveEmployeeController extends Controller
 {
@@ -141,16 +143,19 @@ class LeaveEmployeeController extends Controller
                 $receiver = User::find($leave->approved_by);
                 $leaveData = [
                     'name' => 'leave' ,
+                    'subject' => 'Leave Notification' ,
                     'body' => 'You received a leave.',
                     'thanks' => 'Thank you',
                     'leaveUrl' => url('admin/leave'),
                     'leave_id' => $leave->id,
                     'employee_id' => $sender->id,
                     'employee_name' => $sender->name,
+                    'receiver_name' => $receiver->name,
                     'text' => 'added new'
                 ];
 
                 Notification::send($receiver, new leavesNotification($leaveData));
+                Mail::to($receiver->email)->send(new LeavesNotificationMail($leaveData));
                 /*NOTIFICATION CREATE [END]*/
 
                 //Session::flash('success', 'Your leave has been confirmed successfully.');

@@ -135,7 +135,7 @@
 
                         @if(auth()->user()->hasRole('superadmin'))
                         <li class="nav-item">
-                            <a href="{{ url('maileclipse') }}" class="nav-link">
+                            <a href="{{ url('maileclipse') }}" class="nav-link" target="_blank">
                                 <i class="fas fa-envelope-open-text nav-icon" aria-hidden="true"></i>
                                 <p>Email Templates</p>
                             </a>

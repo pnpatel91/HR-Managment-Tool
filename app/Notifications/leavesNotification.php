@@ -63,6 +63,7 @@ class leavesNotification extends Notification
             'id' => $this->leaveData['leave_id'],
             'user_id' => $this->leaveData['employee_id'],
             'user_name' => $this->leaveData['employee_name'],
+            'receiver_name' => $this->leaveData['receiver_name'],
             'actionUrl'=> $this->leaveData['leaveUrl']
         ];
     }

@@ -82,6 +82,11 @@ password - password
 - Creat Requests file in app/http/Requests folder for validation
 - Update model, view, controller 
 
+## Create New Notification
+
+- ```cmd 
+  $ php artisan make:notification leavesNotification
+  ```
 ## License
 
 MIT

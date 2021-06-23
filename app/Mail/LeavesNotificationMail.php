@@ -28,14 +28,15 @@ class LeavesNotificationMail extends Mailable
      */
     public function build()
     {
-        return $this->subject($this->leaveData['subject'])->markdown('leavesNotification.view', 
+        return $this->subject($this->leaveData['subject'])->markdown('mail.leavesNotification.view', 
                                                 [
                                                     'name' => $this->leaveData['name'],
                                                     'text' => $this->leaveData['body'],
                                                     'leave_id' => $this->leaveData['leave_id'],
                                                     'employee_id' => $this->leaveData['employee_id'],
                                                     'employee_name' => $this->leaveData['employee_name'],
-                                                    'leaveUrl'=> $this->leaveData['leaveUrl']
+                                                    'receiver_name' => $this->leaveData['receiver_name'],
+                                                    'actionUrl'=> $this->leaveData['leaveUrl']
                                                 ]);
     }
 }
