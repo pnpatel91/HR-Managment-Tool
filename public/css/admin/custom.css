@@ -79,7 +79,7 @@ div.dataTables_wrapper div.dataTables_paginate {
   }
   [tooltip] {
     position: relative; /* opinion 1 */
-    font-size: 13px !important;
+    font-size: 15px !important;
   }
 
   /* Applies to all tooltips */
@@ -507,3 +507,173 @@ ul.notification-list > li a {
 }
 
 /*Notification Dropdown Manu CSS [END]*/
+
+.select2-container {
+    width: 100% !important;
+}
+
+.user-add-shedule-list{
+    width: 185px;
+}
+
+.user-add-shedule-list h2 a.anchertag {
+    border: 2px dashed #1EB53A;
+    padding: 10px;
+    color: #1EB53A;
+}
+
+.anchertag {
+    display: inline-block;
+    padding: 10px;
+    border: 1px dashed #a7a7a7;
+    color: #a7a7a7;
+    border-radius: 5px;
+}
+
+.user-add-shedule-list h2 span {
+    color: #888;
+    display: block;
+    font-size: 12px;
+}
+
+.user-add-shedule-list span {
+    justify-content: center;
+    display: flex;
+}
+
+.delete-user-add-shedule-list {
+    /* margin: 0px 0px -25px 145px !important; */
+    text-align: right;
+    color: #ff5c6c;
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.user-add-shedule-list h2.table-avatar {
+    align-items: center;
+    display: inline-flex;
+    font-size: inherit;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.user-add-shedule-list h2 a {
+    color: #ff5c6c;
+}
+
+.delete-form-rota{
+    margin-top: 2px;
+}
+
+.dataTables_info{
+    position: absolute;
+}
+
+.dataTables_paginate{
+    margin-top: 10px !important;
+}
+
+.view-icons {
+    float: right;
+}
+
+.view-icons .btn.active {
+    color: #333;
+}
+
+.view-icons .btn {
+    background-color: #fff;
+    border: 1px solid #e3e3e3;
+    color: #888;
+    font-size: 18px;
+    margin-right: 5px;
+    min-width: 40px;
+    padding: 4px;
+}
+
+.swal2-title {
+    margin: 15px 0 0 .4em !important;
+}
+
+.anchertag-calander{
+    top: 50%;
+    margin: 0 0 0 65px;
+    position: absolute;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.fc-row .fc-bg {
+    z-index: unset !important;
+}
+
+.fc-row .fc-content-skeleton {
+    position: unset !important;
+    z-index: unset !important;
+    padding-bottom: 2px;
+}
+
+.fc-unthemed td.fc-today {
+    background: none !important;
+}
+
+.fc-basic-view .fc-body .fc-row {
+    min-height: 120px !important;
+}
+
+/*.list-group-item {
+    background-color: black;
+}*/
+
+
+/*----------------genealogy-scroll For Users Team Tree [Start]----------*/
+.mgt-container { flex-grow: 1; overflow: auto; justify-content: center;}
+.basic-style { background-color: #EFE6E2; }
+.mgt-item-parent p { font-weight: 400; color: #DE5454;}
+
+.management-tree { background-color: #ffffff; font-family: inherit; padding: 40px;}
+.management-tree .person { text-align: center;}
+.management-tree .person img { max-width: 80px; border: 2px solid #d7d7d7; border-radius: 50%; overflow: hidden; background-color: #f7f7f7;}
+.management-tree .person p.name { background-color: #f7f7f7; padding: 5px; font-size: 12px; font-weight: normal; color: #676767; margin: 0; position: relative;}
+.management-tree .person p.name:before { content: ''; position: absolute; width: 2px; height: 5px; background-color: #d7d7d7; left: 50%; top: 0; transform: translateY(-100%);}
+
+.mgt-wrapper { display: flex;}
+.mgt-wrapper .mgt-item { display: flex; flex-direction: column; margin: auto;}
+.mgt-wrapper .mgt-item .mgt-item-parent { margin-bottom: 50px; position: relative; display: flex; justify-content: center;}
+.mgt-wrapper .mgt-item .mgt-item-parent:after { position: absolute; content: ''; width: 2px; height: 25px; bottom: 0; left: 50%; background-color: #d7d7d7; transform: translateY(100%);}
+.mgt-wrapper .mgt-item .mgt-item-children { display: flex; justify-content: center;}
+.mgt-wrapper .mgt-item .mgt-item-children .mgt-item-child { padding: 0 15px; position: relative;}
+.mgt-wrapper .mgt-item .mgt-item-children .mgt-item-child:before, .mgt-wrapper .mgt-item .mgt-item-children .mgt-item-child:after { content: ''; position: absolute; background-color: #d7d7d7; left: 0;}
+.mgt-wrapper .mgt-item .mgt-item-children .mgt-item-child:before { left: 50%; top: 0; transform: translateY(-100%); width: 2px; height: 25px;}
+.mgt-wrapper .mgt-item .mgt-item-children .mgt-item-child:after { top: -23px; transform: translateY(-100%); height: 2px; width: 100%;}
+.mgt-wrapper .mgt-item .mgt-item-children .mgt-item-child:first-child:after { left: 50%; width: 50%;} 
+.mgt-wrapper .mgt-item .mgt-item-children .mgt-item-child:last-child:after { width: calc(50% + 1px);}
+
+
+/*--------------genealogy-scroll For Users Team Tree [End]----------*/
+
+/* At the top level of your code */
+@media screen and (max-width: 900px) {
+  #full_calendar_events {
+    width: 100%;
+    overflow: auto;
+  }
+
+  .fc-view-container {
+    overflow-x: scroll !important;
+    width: 1200px;
+  }
+
+  .fc-right {
+    float: left !important;
+    padding: 20px 0 0 0 !important;
+  }
+}
