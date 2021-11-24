@@ -56,7 +56,7 @@
                                 @forelse ($holidays as $holiday)
                                 <tr @if($holiday->next_holiday() == $holiday->id) class='datatable-active' @endif>
                                     <td class="col-2">{{ $holiday->name }}</td>
-                                    <td  class="col-2">{{ date_format(date_create($holiday->holiday_date), "l jS F Y") }}</td>
+                                    <td  class="col-2">{{ date_format(date_create($holiday->holiday_date), "Y/m/d") }}</td>
                                     <td class="col-4">@foreach($holiday->branches as $branch)<span class="selection_choice">{{$branch->company->name}} - {{$branch->name}}</span>@endforeach</td>
                                     <td class="col-2"><img src="{{$holiday->creator->getImageUrlAttribute($holiday->creator->id)}}" alt="user_id_{{$holiday->creator->name}}" class="profile-user-img-small img-circle"> {{$holiday->creator->name}}</td>
                                     @if (auth()->user()->can('edit holiday') || auth()->user()->can('delete holiday'))
@@ -105,6 +105,7 @@ function datatables() {
 
 function datatables_firstcall() {
     var table = $('#table').DataTable({
+        dom: 'RBfrtip',
         buttons: [],
         aaSorting     : [[1, 'asc']],
         "bDestroy": true

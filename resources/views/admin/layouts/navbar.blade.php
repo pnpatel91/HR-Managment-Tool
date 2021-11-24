@@ -13,10 +13,10 @@
     <ul class="navbar-nav ml-auto">
         <!-- Messages Dropdown Menu -->
         <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
+            <!-- <a class="nav-link" data-toggle="dropdown" href="#">
                 <i class="far fa-comments"></i>
                 <span class="badge badge-danger navbar-badge">3</span>
-            </a>
+            </a> -->
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <a href="#" class="dropdown-item">
                     <!-- Message Start -->
@@ -92,6 +92,7 @@
                                 <div class="u-text">
                                     <h4 id="topnav_dropdown_full_name">{{ auth()->user()->name }}</h4>
                                     <p class="text-muted" id="topnav_dropdown_email">{{ auth()->user()->email }}</p>
+                                    <p class="text-muted" id="topnav_dropdown_email">IP : {{App\Http\Controllers\Admin\AttendanceController::get_location()->ip}}</p>
                                     <a href="{{ url('admin/profile/edit') }}" class="btn btn-rounded btn-danger btn-sm edit-add-modal-button js-ajax-ux-request reset-target-modal-form">Update Avatar</a>
                                 </div>
                             </div>

@@ -35,6 +35,7 @@ class HolidayController extends Controller
      */
     public function index()
     {
+        $branch_id = auth()->user()->getBranchIdsAttribute();
         $holidays = Holiday::select([
                 'id',
                 'name',
@@ -43,7 +44,10 @@ class HolidayController extends Controller
                 'updated_by',
                 'created_at',
                 'updated_at',
-            ])->get();
+            ])->with(['branches' => function($query) use ($branch_id) {
+                                    $query->whereIn('branch_id', $branch_id);
+                                }])
+                            ->whereHas('branches', function($q) use ($branch_id) { $q->whereIn('branch_id', $branch_id); })->orderBy('holiday_date', 'ASC')->get();
         return view('admin.holiday.index',compact('holidays'));
     }
 
@@ -191,9 +195,9 @@ class HolidayController extends Controller
         // delete holiday
         $holiday->delete();
 
-        //return redirect('admin/holiday')->with('success', 'holiday deleted successfully.');
+        //return redirect('admin/holiday')->with('delete', 'holiday deleted successfully.');
         return response()->json([
-            'success' => 'holiday deleted successfully.' // for status 200
+            'delete' => 'holiday deleted successfully.' // for status 200
         ]);
     }
 }

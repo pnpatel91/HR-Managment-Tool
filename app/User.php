@@ -8,18 +8,20 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Image;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasRoles;
-
+    use Notifiable, HasRoles,SoftDeletes;
+    
+    protected $softDelete = true;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'biography', 'dateOfBirth', 'email', 'password',
+        'name', 'biography', 'dateOfBirth', 'email', 'password', 'parent_id', 'position', 'remote_employee'
     ];
 
     /**
@@ -39,6 +41,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isDisabled()
+    {
+        if(!auth()->user()->hasRole('superadmin') && $this->getRoleNames()->first()=='superadmin'){
+           return 'disabled'; 
+        }else{
+            return null; 
+        }
+    }
 
     public function images()
     {
@@ -136,4 +147,50 @@ class User extends Authenticatable
     public function leave_approved_by(){
         return $this->belongsTo(Leave::class,'approved_by')->with('branch');
     }
+
+    /**
+     * Get the employee rota.
+     */
+    public function rota(){
+        return $this->belongsTo(Rota::class,'user_id');
+    }
+
+    /**
+     * The wikiCategories that belong to the user.
+     */
+    public function wikiCategories()
+    {
+        return $this->belongsToMany(wikiCategories::class, 'user_has_wiki_categories', 'user_id', 'wiki_category_id');
+    }
+
+
+    /**
+     * Get the parent user of this user.
+     */
+    public function parent()
+    {
+        return $this->belongsTo(User::class, 'parent_id');
+    }
+
+    /**
+     * Get the parent user of this user.
+     */
+    public function allparent()
+    {
+        return $this->parent()->with('allparent');
+    }
+
+    /**
+     * Get the children user of this user.
+    */
+    public function children()
+    {
+        return $this->hasMany(User::class, 'parent_id');
+    }
+
+    public function allChildren()
+    {
+        return $this->children()->with('allChildren');
+    }
+
 }

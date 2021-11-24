@@ -24,8 +24,7 @@ class AttendanceStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'latitude' => ['regex:/[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)+/'],
-            'longitude' => ['regex:/[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)+/'],
+            
         ];
     }
 }

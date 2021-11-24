@@ -94,7 +94,8 @@ class DepartmentController extends Controller
     public function create()
     {
         if(!auth()->user()->hasRole('superadmin')){
-            $users = User::select('id', 'name')->whereHas('branches', function($q) use ($branch_id) { $q->where('branch_id', $branch_id); })->get();
+            $branch_id = auth()->user()->getBranchIdsAttribute();
+            $users = User::select('id', 'name')->whereHas('branches', function($q) use ($branch_id) { $q->whereIn('branch_id', $branch_id); })->get();
         }else{
             $users = User::all('id', 'name');
         }
@@ -158,7 +159,8 @@ class DepartmentController extends Controller
     public function edit(Department $department)
     {
         if(!auth()->user()->hasRole('superadmin')){
-            $users = User::select('id', 'name')->whereHas('branches', function($q) use ($branch_id) { $q->where('branch_id', $branch_id); })->get();
+            $branch_id = auth()->user()->getBranchIdsAttribute();
+            $users = User::select('id', 'name')->whereHas('branches', function($q) use ($branch_id) { $q->whereIn('branch_id', $branch_id); })->get();
         }else{
             $users = User::all('id', 'name');
         }
@@ -225,9 +227,9 @@ class DepartmentController extends Controller
         // delete department
         $department->delete();
 
-        //return redirect('admin/department')->with('success', 'department deleted successfully.');
+        //return redirect('admin/department')->with('delete', 'department deleted successfully.');
         return response()->json([
-            'success' => 'department & users deleted successfully.' // for status 200
+            'delete' => 'department & users deleted successfully.' // for status 200
         ]);
     }
 }

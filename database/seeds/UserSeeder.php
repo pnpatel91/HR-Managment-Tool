@@ -14,7 +14,8 @@ class UserSeeder extends Seeder
     {
         $user = new User();
         $user->name = 'Super Admin';
-        $user->email = 'superadmin@gmail.com';
+        //$user->email = 'superadmin@gmail.com';
+        $user->email = 'parth.onfuro@gmail.com';
         $user->position = 'Owner';
         $user->biography = '<p>Super Admin&nbsp;Biography</p>';
         $user->dateOfBirth = '2003-04-30';

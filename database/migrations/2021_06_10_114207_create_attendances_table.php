@@ -21,14 +21,16 @@ class CreateAttendancesTable extends Migration
             $table->double('latitude')->nullable();
             $table->double('longitude')->nullable();
             $table->string('ip_address', 40)->nullable()->comment('User IP Address'); 
+            $table->unsignedBigInteger('punch_in_id')->nullable()->index();
             $table->unsignedBigInteger('branch_id')->index();
             $table->unsignedBigInteger('created_by')->index()->comment('Attendanced User');
             $table->unsignedBigInteger('updated_by')->index();
             $table->timestamps();
 
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('punch_in_id')->references('id')->on('attendances');
+            $table->foreign('branch_id')->references('id')->on('branches');
+            $table->foreign('created_by')->references('id')->on('users')->delete('cascade');
+            $table->foreign('updated_by')->references('id')->on('users')->delete('cascade');
         });
     }
 
@@ -40,6 +42,7 @@ class CreateAttendancesTable extends Migration
     public function down()
     {
         Schema::table('attendances', function (Blueprint $table) {
+            $table->dropForeign(['punch_in_id']);
             $table->dropForeign(['branch_id']);
             $table->dropForeign(['created_by']);
             $table->dropForeign(['updated_by']);

@@ -1,4 +1,20 @@
 <!DOCTYPE html>
+
+<!-- Redirect http to https [START] -->
+<?php
+if (!(isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || 
+   $_SERVER['HTTPS'] == 1) ||  
+   isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&   
+   $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'))
+{
+   $redirect = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+   header('HTTP/1.1 301 Moved Permanently');
+   header('Location: ' . $redirect);
+   exit();
+}
+?>
+<!-- Redirect http to https [END] -->
+
 <!--
 This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
@@ -10,6 +26,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="refresh" content="{{ (config('session.lifetime') * 60)+10 }}">
 
     <title>{{ config('app.name', 'Project Management System') }}</title>
 
@@ -112,7 +129,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <!-- PAGE LOADER -->
         <div id="pageloader">
-           <img src="http://cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.16.1/images/loader-large.gif" alt="processing..." />
+           <img src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.16.1/images/loader-large.gif" alt="processing..." />
         </div>
 
         <!-- Navbar -->
@@ -225,7 +242,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </div><!-- /.container-fluid -->
 
                 @can('view attendance')
-                <div class="col-md-9 card">
+                <div class="col-md-12 card">
                   <div class="card-header border-transparent">
                     <h3 class="card-title">Today's Attendance</h3>
 
@@ -281,6 +298,89 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <!-- /.card-footer -->
                 </div>
                 @endcan 
+
+                <div class="col-md-12 card">
+                  <div class="card-header border-transparent">
+                    <h3 class="card-title">Week's Rota</h3>
+
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                      <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body p-0" style="display: block;">
+                    <div class="table-responsive">
+                      <table class="table m-0">
+                        <thead>
+                          <tr>
+                              <th>Date</th>
+                              <th>Start Date & Time</th>
+                              <th>End Date & Time</th>
+                              <th>Break Time</th>
+                              <th>Location</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          @php
+                            $startDate = Carbon\Carbon::now()->format('m/d/Y');
+                            $endDate = Carbon\Carbon::now()->addDay('6')->format('m/d/Y');
+                          @endphp 
+                          @for($d = Carbon\Carbon::parse($startDate); $d->lte(Carbon\Carbon::parse($endDate)); $d->addDay())
+                              @php 
+                                  $rotas = \App\Rota::with('branch')->where('user_id',auth()->user()->id)->where('start_date',$d)->get();
+                              @endphp
+                          
+                              @if($rotas->count()!=0)
+                                  @foreach($rotas as $rota)
+                                  <tr>
+                                      <td>
+                                          {{$d->format('Y-m-d')}}
+                                      </td>
+                                      <td>
+                                          {{$rota->start_date}} {{Carbon\Carbon::parse($rota->start_time)->format('H:i')}}
+                                      </td>
+                                      <td>
+                                          {{$rota->end_date}} {{Carbon\Carbon::parse($rota->end_time)->format('H:i')}}
+                                      </td>
+                                      <td>
+                                          {{$rota->break_time}} minutes
+                                      </td>
+                                      <td class=" col-md-3">
+                                          @if($rota->remotely_work=='No')
+                                              {{$rota->branch->name}}
+                                          @else
+                                              Remotely Work
+                                          @endif
+                                      </td>
+                                  </tr>     
+                                  @endforeach
+                              @else
+                              <tr>
+                                  <td>
+                                      {{$d->format('Y-m-d')}}
+                                  </td>
+                                  <td colspan="4" class="text-center">No Scheduled</td>
+                              </tr> 
+                              @endif
+                          
+                          @endfor
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <!-- /.card-body -->
+                  <div class="card-footer clearfix" style="display: block;">
+                    <a href="{{ url('admin/rota/employee') }}" class="btn btn-sm btn-success float-left">View All Rota</a>
+                  </div>
+                  <!-- /.card-footer -->
+                </div>
 
               @yield('content')
 
@@ -345,12 +445,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <script type="text/javascript">
             function loadNotificationsDropdownMenu(){
-                $('#Notifications-Dropdown-Menu').load("{{ route('admin.notifications-dropdown-menu') }}");
+                if($('.dropdown-menu').is(":visible")==false){
+                   $('#Notifications-Dropdown-Menu').load("{{ route('admin.notifications-dropdown-menu') }}"); 
+                }
             }
-
             loadNotificationsDropdownMenu();
             setInterval(function(){
-                loadNotificationsDropdownMenu()
+                loadNotificationsDropdownMenu();
             }, 10000);
         </script>
 

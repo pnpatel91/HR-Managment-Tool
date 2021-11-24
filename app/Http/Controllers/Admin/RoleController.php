@@ -112,7 +112,7 @@ class RoleController extends Controller
         if($role->delete()) {
             
             return response()->json([
-                                        'success' => 'A role has been deleted successfully.' // for status 200
+                                        'delete' => 'A role has been deleted successfully.' // for status 200
                                     ]);
         }
         

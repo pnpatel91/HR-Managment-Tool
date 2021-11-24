@@ -15,8 +15,27 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <form action="{{ route('admin.branch.store') }}" method="post" id="popup-form" >
+                    <form action="{{ route('admin.branch.store') }}" method="post" id="popup-form" class="mt-4">
                         @csrf
+
+                        <div class="form-group">
+                            <label>Company
+                                <!--ADD NEW ITEM-->
+                                <!-- @can('create company')
+                                <a href="{{ route('admin.company.create') }}" class="btn btn-danger btn-add-circle edit-add-modal-button js-ajax-ux-request reset-target-modal-form" id="popup-modal-button">
+                                    <span tooltip="Create new company." flow="right"><i class="fas fa-plus"></i></span>
+                                </a>
+                                @endcan -->
+                                <!--ADD NEW BUTTON (link)-->
+                            </label>
+                            <select class="form-control select2" id="company_id" name="company_id" required autocomplete="company_id">
+                                @foreach ($company as $value)
+                                    <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                @endforeach
+                            </select>
+                            <label id="select2-error" class="error" for="select2"></label>
+                        </div>
+
                         <div class="form-group">
                             <label>Name</label>
                             <input type="text" name="name" class="form-control" required autocomplete="name" autofocus maxlength="60">
@@ -26,20 +45,20 @@
                             <input type="text" name="address" class="form-control" required autocomplete="address" maxlength="60">
                         </div>
                         <div class="form-group">
-                            <label>State</label>
-                            <input type="text" name="state" class="form-control" required autocomplete="state" maxlength="60">
-                        </div>
-                        <div class="form-group">
                             <label>City</label>
                             <input type="text" name="city" class="form-control" required autocomplete="city" maxlength="60">
                         </div>
                         <div class="form-group">
-                            <label>Postcode</label>
-                            <input type="text" name="postcode" class="form-control" required autocomplete="postcode" maxlength="60">
+                            <label>State</label>
+                            <input type="text" name="state" class="form-control" required autocomplete="state" maxlength="60">
                         </div>
                         <div class="form-group">
                             <label>Country</label>
                             <input type="text" name="country" class="form-control" required autocomplete="country" maxlength="60">
+                        </div>
+                        <div class="form-group">
+                            <label>Postcode</label>
+                            <input type="text" name="postcode" class="form-control" required autocomplete="postcode" maxlength="60">
                         </div>
                         <div class="form-group">
                             <label>Latitude <span class="tooltipfontsize" tooltip="Default: your current location latitude" flow="right"><i class="fas fa-info-circle"></i></span></label>
@@ -53,15 +72,7 @@
                             <label>Radius <span class="tooltipfontsize" tooltip="Radius in metres" flow="right"><i class="fas fa-info-circle"></i></span></label>
                             <input type="number" step="any" name="radius" class="form-control" required autocomplete="radius">
                         </div>
-                        <div class="form-group">
-                            <label>Company</label>
-                            <select class="form-control select2" id="company_id" name="company_id" required autocomplete="company_id">
-                                @foreach ($company as $value)
-                                    <option value="{{ $value->id }}">{{ $value->name }}</option>
-                                @endforeach
-                            </select>
-                            <label id="select2-error" class="error" for="select2"></label>
-                        </div>
+
                         <div class="form-group">
                             <label>Users</label>
                             <select class="form-control select2" id="user_id" name="user_id[]" required autocomplete="user_id" multiple>
@@ -121,9 +132,20 @@
     }
 
     function showPosition(position) {
+        if (position.coords.latitude === undefined || position.coords.latitude === null) {
+            document.getElementById("latitude").value= {{App\Http\Controllers\Admin\AttendanceController::get_location()->latitude}};
+        }else{
+            document.getElementById("latitude").value= position.coords.latitude;
+        }
+        
+        if (position.coords.longitude === undefined || position.coords.longitude === null) {
+            document.getElementById("longitude").value= {{App\Http\Controllers\Admin\AttendanceController::get_location()->longitude}};
+        }else{
+            document.getElementById("longitude").value= position.coords.longitude;
+        } 
 
-        document.getElementById("latitude").value= position.coords.latitude;
-        document.getElementById("longitude").value= position.coords.longitude;
+        //document.getElementById("latitude").value= {{App\Http\Controllers\Admin\AttendanceController::get_location()->latitude}};
+        //document.getElementById("longitude").value= {{App\Http\Controllers\Admin\AttendanceController::get_location()->longitude}};
     }
 
     getLocation();

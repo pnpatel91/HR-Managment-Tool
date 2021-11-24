@@ -28,9 +28,9 @@ class CreateLeavesTable extends Migration
             $table->enum('status', ['New', 'Approved', 'Declined']);
             $table->timestamps();
 
-            $table->foreign('employee_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('approved_by')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('users')->delete('cascade');
+            $table->foreign('approved_by')->references('id')->on('users')->delete('cascade');
+            $table->foreign('branch_id')->references('id')->on('branches');
         });
     }
 

@@ -110,7 +110,7 @@
       allowClear: false
     });
 
-    $("#user_id").select2({
+    $("#approved_by").select2({
       placeholder: "select a approver",
       allowClear: false
     });
@@ -127,6 +127,7 @@
                 var start = moment(picker.startDate.format('YYYY-MM-DD'));
                 var end   = moment(picker.endDate.format('YYYY-MM-DD'));
                 var diff = end.diff(start, 'days'); // returns correct number
+                diff= parseInt(diff) + 1;
                 $('#days').val(diff);
                 if(diff==1){
                     $('#half_day_hide_show').show();

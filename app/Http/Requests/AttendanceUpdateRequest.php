@@ -24,7 +24,17 @@ class AttendanceUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            
+            'branch_id' => ['required'],
+            'user_id' => ['required'],
+            'punch_in' => ['required', 'date'],
+            'punch_out' => ['required', 'date', 'after:punch_in'], 
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'punch_out.after' => 'Punch Out must be a date & time after Punch In attendance.',
         ];
     }
 }

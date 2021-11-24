@@ -3,8 +3,8 @@
 
 <p class="text-sm">{{ $text }} - From ({{ $employee_name }})</p>
 
-@component('mail::button', ['url' => '{{ $actionUrl }}'])
-View {{ $name }}
+@component('mail::button', ['url' => $actionUrl])
+View Leave
 @endcomponent
 
 Thanks,<br>

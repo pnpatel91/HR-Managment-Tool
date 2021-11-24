@@ -93,8 +93,14 @@ class LeaveAdminController extends Controller
 
                     ->addColumn('leave_status', function (Leave $data) {
                         if($data->status=='New'){ $class= 'text-purple';}elseif ($data->status=='Approved') { $class ='text-success'; }else{$class ='text-danger';}
-                        return '<a class="btn btn-white btn-sm btn-rounded" href="javascript:void(0);">
-                                                        <i class="fa fa-dot-circle-o '.$class.'"></i> '.$data->status.' </a>';
+                        return '<div class="dropdown action-label">
+                                                    <a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-dot-circle-o '.$class.'"></i> '.$data->status.' </a>
+                                                    <div class="dropdown-menu dropdown-menu-right" style="">
+                                                        <a class="dropdown-item" href="#" onclick="funChangeStatus('.$data->id.',0); return false;"><i class="fa fa-dot-circle-o text-purple"></i> New (On Hold)</a>
+                                                        <a class="dropdown-item" href="#" onclick="funChangeStatus('.$data->id.',1); return false;"><i class="fa fa-dot-circle-o text-success"></i> Approved</a>
+                                                        <a class="dropdown-item" href="#" onclick="funChangeStatus('.$data->id.',2); return false;"><i class="fa fa-dot-circle-o text-danger"></i> Declined</a>
+                                                    </div>
+                                                </div>';
                     })
 
                     
@@ -119,7 +125,7 @@ class LeaveAdminController extends Controller
             $branch_id = auth()->user()->getBranchIdsAttribute();
             $branches = Branch::whereIn('id',$branch_id)->get();
             $approvers = User::whereHas("roles", function($q){ $q->where("name", "superadmin")->orWhere("name", "admin"); })->get();
-            $users = User::select('id', 'name')->whereHas('branches', function($q) use ($branch_id) { $q->where('branch_id', $branch_id); })->get();
+            $users = User::select('id', 'name')->whereHas('branches', function($q) use ($branch_id) { $q->whereIn('branch_id', $branch_id); })->get();
         }else{
             $branches = Branch::all();
             $approvers = User::whereHas("roles", function($q){ $q->where("name", "superadmin")->orWhere("name", "admin"); })->get();
@@ -171,7 +177,7 @@ class LeaveAdminController extends Controller
                     'employee_id' => $sender->id,
                     'employee_name' => $sender->name,
                     'receiver_name' => $receiver->name,
-                    'text' => 'added new'
+                    'text' => 'added new leave'
                 ];
 
                 Notification::send($receiver, new leavesNotification($leaveData));
@@ -237,6 +243,93 @@ class LeaveAdminController extends Controller
     }
 
     /**
+     * Datatables Ajax Data
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function change_status(Request $request)
+    {
+        try {
+
+            $leave = Leave::find($request->id);
+            if (empty($leave)) {
+                //Session::flash('failed', 'branch Update Denied');
+                //return redirect()->back();
+                return response()->json([
+                    'error' => 'leave update denied.' // for status 200
+                ]);   
+            }
+
+            $old_status = $leave->status;
+            $leave->status = $request->status;
+            $leave->save();
+
+            /*NOTIFICATION CREATE [START]*/
+            if($old_status != $leave->status){
+                
+                $sender = User::find($leave->approved_by);
+                $receiver = User::find($leave->employee_id);
+                if($leave->status=='New'){$leave->status='on hold';}
+                $leaveData = [
+                    'name' => Str::lower($leave->status),
+                    'subject' => 'Leave Notification' ,
+                    'body' => 'your leave has been '.Str::lower($leave->status),
+                    'thanks' => 'Thank you',
+                    'leaveUrl' => url('admin/leave'),
+                    'leave_id' => $leave->id,
+                    'employee_id' => $sender->id,
+                    'employee_name' => $sender->name,
+                    'receiver_name' => $receiver->name,
+                    'text' => 'your leave has been '.Str::lower($leave->status)
+                ];
+
+                Notification::send($receiver, new leavesNotification($leaveData));
+                Mail::to($receiver->email)->send(new LeavesNotificationMail($leaveData));
+                
+            }
+            /*NOTIFICATION CREATE [END]*/
+
+            
+
+            //Session::flash('success', 'A branch updated successfully.');
+            //return redirect('admin/branch');
+
+            return response()->json([
+                'success' => 'leave update successfully.' // for status 200
+            ]);
+
+        } catch (\Exception $exception) {
+
+            DB::rollBack();
+
+            //Session::flash('failed', $exception->getMessage() . ' ' . $exception->getLine());
+            /*return redirect()->back()->withInput($request->all());*/
+
+            return response()->json([
+                'error' => $exception->getMessage() . ' ' . $exception->getLine() // for status 200
+            ]);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Leave  $leave
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Leave $leave)
+    {
+        // delete branch
+        $leave->delete();
+
+        //return redirect('admin/branch')->with('delete', 'branch deleted successfully.');
+        return response()->json([
+            'delete' => 'leave deleted successfully.' // for status 200
+        ]);
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\LeaveUpdateRequest  $request
@@ -286,7 +379,7 @@ class LeaveAdminController extends Controller
                     'employee_id' => $sender->id,
                     'employee_name' => $sender->name,
                     'receiver_name' => $receiver->name,
-                    'text' => 'your leave has been'
+                    'text' => 'your leave has been '.Str::lower($leave->status)
                 ];
 
                 Notification::send($receiver, new leavesNotification($leaveData));
@@ -315,22 +408,5 @@ class LeaveAdminController extends Controller
                 'error' => $exception->getMessage() . ' ' . $exception->getLine() // for status 200
             ]);
         }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Leave  $leave
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Leave $leave)
-    {
-        // delete branch
-        $leave->delete();
-
-        //return redirect('admin/branch')->with('success', 'branch deleted successfully.');
-        return response()->json([
-            'success' => 'leave deleted successfully.' // for status 200
-        ]);
     }
 }

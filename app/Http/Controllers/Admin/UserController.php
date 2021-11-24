@@ -7,8 +7,24 @@ use App\User;
 use App\Image;
 use App\Branch;
 use App\Department;
+use App\Attendance;
+use App\Leave;
+use App\Rota;
+
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
+use App\Traits\UploadTrait;
+
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use JeroenDesloovere\Distance\Distance;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -34,7 +50,7 @@ class UserController extends Controller
                                     $query->whereIn('branch_id', $branch_id);
                                 }])
                             ->whereHas('branches', function($q) use ($branch_id) { 
-                                    $q->where('branch_id', $branch_id); })
+                                    $q->whereIn('branch_id', $branch_id); })
                             ->orderBy('id', 'ASC')
                             ->get();
         }else{
@@ -56,13 +72,16 @@ class UserController extends Controller
         }else{
             $branches = Branch::all();
         }
+
         $departments = Department::all();
-        return view('admin.user.create', compact('roles', 'branches', 'departments'));
+
+        $parents = User::all();
+        return view('admin.user.create', compact('roles', 'branches', 'departments', 'parents'));
     }
 
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        $input = $request->only('name', 'email', 'password');
+        $input = $request->only('name', 'email', 'password', 'parent_id', 'position', 'remote_employee');
         $input['password'] = bcrypt($request->password);
         $user = User::create($input);
         $user->assignRole($request->role);
@@ -93,12 +112,14 @@ class UserController extends Controller
         $departments = Department::all();
         $userBranches = $user->branches->pluck('id')->toArray();
         $userDepartments = $user->departments->pluck('id')->toArray();
-        return view('admin.user.edit', compact('user', 'roles', 'userRole', 'branches', 'userBranches', 'departments', 'userDepartments'));
+
+        $parents = User::where('id', '!=' , $user->id)->get();
+        return view('admin.user.edit', compact('user', 'roles', 'userRole', 'branches', 'userBranches', 'departments', 'userDepartments', 'parents'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        $input = $request->only('name', 'email');
+        $input = $request->only('name', 'email', 'parent_id', 'position', 'remote_employee');
         if($request->filled('password')) {
             $input['password'] = bcrypt($request->password);
         }
@@ -122,10 +143,28 @@ class UserController extends Controller
         }
         $user->branches()->detach();
         $user->departments()->detach();
+
+        // delete related attendances 
+        $attendances = Attendance::where('created_by',$user->id)->orWhere('updated_by',$user->id)->get();
+        foreach ($attendances as $attendance) {
+            if(isset($attendance->punch_in->id)){
+               $attendance->find($attendance->punch_in->id)->delete(); 
+            }
+            if(isset($attendance->punch_out->id)){
+               $attendance->find($attendance->punch_out->id)->delete(); 
+            }
+            $attendance->delete();
+        }
+        
+
+        // delete related leaves
+        $leave = Leave::where('employee_id',$user->id)->orWhere('approved_by',$user->id)->delete();
+
+        $user->rota()->delete();
         $user->delete();
-        //return redirect()->route('admin.user.index')->with('success', 'A user was deleted.');
+        //return redirect()->route('admin.user.index')->with('delete', 'A user was deleted.');
         return response()->json([
-            'success' => 'A team member was deleted successfully.' // for status 200
+            'delete' => 'A team member was deleted successfully.' // for status 200
         ]);
     }
 
@@ -158,4 +197,18 @@ class UserController extends Controller
           }
           return $output;
     }
+
+    /**
+     * Display user tree.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function tree()
+    {
+          $users = User::with('allChildren')->where('parent_id',null)->get();
+          return view('admin.user.tree', compact('users'));
+    }
+
+    
 }

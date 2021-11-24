@@ -100,10 +100,10 @@ class LeaveEmployeeController extends Controller
         if(!auth()->user()->hasRole('superadmin')){
             $branch_id = auth()->user()->getBranchIdsAttribute();
             $branches = Branch::whereIn('id',$branch_id)->get();
-            $approvers = User::whereHas("roles", function($q){ $q->where("name", "superadmin")->orWhere("name", "admin"); })->get();
+            $approvers = User::whereHas("roles", function($q){ $q->where("name", "superadmin")->orWhere("name", "developer"); })->orWhere("id", auth()->user()->parent_id)->get();
         }else{
             $branches = Branch::all();
-            $approvers = User::whereHas("roles", function($q){ $q->where("name", "superadmin")->orWhere("name", "admin"); })->get();
+            $approvers = User::whereHas("roles", function($q){ $q->where("name", "superadmin")->orWhere("name", "developer"); })->orWhere("id", auth()->user()->parent_id)->get();
         }
 
         $leave_types = ['Annual', 'Sick', 'Hospitalisation', 'Maternity', 'Paternity', 'LOP'];
@@ -151,7 +151,7 @@ class LeaveEmployeeController extends Controller
                     'employee_id' => $sender->id,
                     'employee_name' => $sender->name,
                     'receiver_name' => $receiver->name,
-                    'text' => 'added new'
+                    'text' => 'added new leave'
                 ];
 
                 Notification::send($receiver, new leavesNotification($leaveData));
@@ -201,10 +201,10 @@ class LeaveEmployeeController extends Controller
         if(!auth()->user()->hasRole('superadmin')){
             $branch_id = auth()->user()->getBranchIdsAttribute();
             $branches = Branch::whereIn('id',$branch_id)->get();
-            $approvers = User::whereHas("roles", function($q){ $q->where("name", "superadmin")->orWhere("name", "admin"); })->get();
+            $approvers = User::whereHas("roles", function($q){ $q->where("name", "superadmin")->orWhere("name", "developer"); })->orWhere("id", auth()->user()->parent_id)->get();
         }else{
             $branches = Branch::all();
-            $approvers = User::whereHas("roles", function($q){ $q->where("name", "superadmin")->orWhere("name", "admin"); })->get();
+            $approvers = User::whereHas("roles", function($q){ $q->where("name", "superadmin")->orWhere("name", "developer"); })->orWhere("id", auth()->user()->parent_id)->get();
         }
 
         $leave_types = ['Annual', 'Sick', 'Hospitalisation', 'Maternity', 'Paternity', 'LOP'];
@@ -277,9 +277,9 @@ class LeaveEmployeeController extends Controller
         // delete branch
         $leave_employee->delete();
 
-        //return redirect('admin/branch')->with('success', 'branch deleted successfully.');
+        //return redirect('admin/branch')->with('delete', 'branch deleted successfully.');
         return response()->json([
-            'success' => 'leave deleted successfully.' // for status 200
+            'delete' => 'leave deleted successfully.' // for status 200
         ]);
     }
 }

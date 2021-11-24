@@ -57,23 +57,33 @@
                                     <td>{{ $role->name }}</td>
                                     <td>{{ $role->date }}</td>
                                     <td>
-                                        @can('edit role')
-                                        <a href="{{ route('admin.role.edit', ['role' => $role->id]) }}" class="btn btn-success btn-sm float-left mr-3" id="popup-modal-buttonUserRole">
-                                            <span tooltip="Edit" flow="left"><i class="fas fa-edit"></i></span>
-                                        </a>
-                                        @endcan 
-                                        @can('delete role')
-                                        <form method="post" class="float-left delete-formUserRole"
-                                            action="{{ route('admin.role.destroy', ['role' => $role->id ]) }}">
-                                            @csrf
-                                            @method('delete')
+                                        @if($role->isDisabled()!='disabled')
+                                            @can('edit role')
+                                            <a href="{{ route('admin.role.edit', ['role' => $role->id]) }}" class="btn btn-success btn-sm float-left mr-3" id="popup-modal-buttonUserRole">
+                                                <span tooltip="Edit" flow="left"><i class="fas fa-edit"></i></span>
+                                            </a>
+                                            @endcan 
+                                            @can('delete role')
+                                            <form method="post" class="float-left delete-formUserRole"
+                                                action="{{ route('admin.role.destroy', ['role' => $role->id ]) }}">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" class="btn btn-danger btn-sm" 
+                                                {{ $role->isDisabled() }}
+                                                >
+                                                    <span tooltip="Delete" flow="right"><i class="fas fa-trash-alt"></i></span>
+                                                </button>
+                                            </form>
+                                            @endcan
+                                        @else
+                                            <button type="submit" class="btn btn-success btn-sm float-left mr-3" 
+                                                {{ $role->isDisabled() }}
+                                                ><span tooltip="Edit" flow="left"><i class="fas fa-edit"></i></span></button>
+
                                             <button type="submit" class="btn btn-danger btn-sm" 
-                                            {{ $role->isDisabled() }}
-                                            >
-                                                <span tooltip="Delete" flow="right"><i class="fas fa-trash-alt"></i></span>
-                                            </button>
-                                        </form>
-                                        @endcan
+                                                {{ $role->isDisabled() }}
+                                                ><span tooltip="Delete" flow="right"><i class="fas fa-trash-alt"></i></span></button>
+                                        @endif
                                     </td>
                                 </tr>
                                 @empty

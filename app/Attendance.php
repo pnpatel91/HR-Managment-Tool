@@ -17,7 +17,7 @@ class Attendance extends Model
      * @var array
      */
     protected $fillable = [
-        'time','status', 'distance', 'latitude', 'longitude', 'ip_address', 'branch_id', 'created_at', 'updated_at', 'created_by', 'updated_by'
+        'time','status', 'distance', 'latitude', 'longitude', 'ip_address', 'branch_id', 'punch_in_id', 'created_at', 'updated_at', 'created_by', 'updated_by'
     ];
 
     /**
@@ -40,5 +40,18 @@ class Attendance extends Model
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'branch_id')->with('company');
+    }
+
+    /**
+     * The punch_in that belong to the attendances.
+     */
+    public function punch_in()
+    {
+        return $this->belongsTo($this, 'punch_in_id');
+    }
+
+
+    public function punch_out() {
+        return $this->hasOne($this, 'punch_in_id');
     }
 }

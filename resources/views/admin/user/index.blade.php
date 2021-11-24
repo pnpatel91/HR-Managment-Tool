@@ -64,12 +64,17 @@
                                     <td class="col-2">{{ $user->date }}</td>
                                     <td  class="col-2">
                                         @can('edit user')
-                                        <a href="{{ route('admin.user.edit', ['user' => $user->id]) }}" 
-                                            class="btn btn-success btn-sm float-left mr-3"  id="popup-modal-buttonUserRole">
-                                            <span tooltip="Edit" flow="left"><i class="fas fa-edit"></i></span>
-                                        </a>
+                                        @if($user->isDisabled()!='disabled')
+                                            <a href="{{ route('admin.user.edit', ['user' => $user->id]) }}" 
+                                                class="btn btn-success btn-sm float-left mr-3"  id="popup-modal-buttonUserRole">
+                                                <span tooltip="Edit" flow="left"><i class="fas fa-edit"></i></span>
+                                            </a>
+                                        @else
+                                            <button type="submit" class="btn btn-success btn-sm float-left mr-3" disabled><span tooltip="Edit" flow="left"><i class="fas fa-edit"></i></span></button>
+                                        @endif
                                         @endcan 
                                         @can('delete user')
+                                        @if(!$user->hasRole('superadmin'))
                                         <form method="post" class="float-left delete-formUserRole"
                                             action="{{ route('admin.user.destroy', ['user' => $user->id ]) }}">
                                             @csrf
@@ -78,6 +83,9 @@
                                                 <span tooltip="Delete" flow="up"><i class="fas fa-trash-alt"></i></span>
                                             </button>
                                         </form>
+                                        @else
+                                            <button type="submit" class="btn btn-danger btn-sm" disabled><span tooltip="Delete" flow="up"><i class="fas fa-trash-alt"></i></span></button>
+                                        @endif
                                         @endcan
                                     </td>
                                 </tr>

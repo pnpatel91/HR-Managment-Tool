@@ -54,6 +54,21 @@ class Permission extends ModelsPermission
             'create leave - employee',
             'edit leave - employee',
             'delete leave - employee',
+
+            'view rota',
+            'create rota',
+            'edit rota',
+            'delete rota',
+
+            'view rota_template',
+            'create rota_template',
+            'edit rota_template',
+            'delete rota_template',
+
+            'view Wiki Category',
+            'create Wiki Category',
+            'edit Wiki Category',
+            'delete Wiki Category',
         ];
     }
 

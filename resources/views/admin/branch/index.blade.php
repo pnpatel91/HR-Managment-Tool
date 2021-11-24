@@ -72,7 +72,7 @@
 function datatables() {
 
     var table = $('#table').DataTable({
-        dom: 'Bfrtip',
+        dom: 'RBfrtip',
         buttons: [],
         select: true,
         

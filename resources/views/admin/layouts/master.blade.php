@@ -3,6 +3,22 @@
 This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
+
+<!-- Redirect http to https [START] -->
+<?php
+if (!(isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || 
+   $_SERVER['HTTPS'] == 1) ||  
+   isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&   
+   $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'))
+{
+   $redirect = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+   header('HTTP/1.1 301 Moved Permanently');
+   header('Location: ' . $redirect);
+   exit();
+}
+?>
+<!-- Redirect http to https [END] -->
+
 <html lang="en">
 
 <head>
@@ -10,6 +26,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="refresh" content="{{ (config('session.lifetime') * 60)+10 }}">
 
     <title>{{ config('app.name', 'Project Management System') }}</title>
 
@@ -41,11 +58,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Date Range Picker CSS -->
         <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+
         <!-- Font Awesome Icons -->
         <link rel="stylesheet" href="{{ asset('public/plugins/fontawesome-free/css/all.min.css') }}">
 
         <!-- Theme style -->
         <link rel="stylesheet" href="{{ asset('public/dist/css/adminlte.min.css') }}">
+
+        <link rel="stylesheet" href="{{asset('public/adminLTE/plugins/fullcalendar/dist/fullcalendar.min.css')}}">
 
         <!-- CUSTOM STYLE -->
         <link rel="stylesheet" href="{{ asset('public/css/admin/custom.css') }}">
@@ -95,6 +116,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.colVis.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/jeffreydwalter/ColReorderWithResize@9ce30c640e394282c9e0df5787d54e5887bc8ecc/ColReorderWithResize.js"></script>
 
         <!-- Select2 JS-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
@@ -103,24 +125,33 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+
+        <script src="{{asset('public/adminLTE/plugins/fullcalendar/dist/fullcalendar.min.js')}}"></script>
+
     <!-- REQUIRED HEAD SCRIPTS [END]-->
     
 </head>
 
 <body class="hold-transition sidebar-mini">
+    
     <div class="wrapper">
 
         <!-- PAGE LOADER -->
         <div id="pageloader">
-           <img src="http://cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.16.1/images/loader-large.gif" alt="processing..." />
+           <img src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.16.1/images/loader-large.gif" alt="processing..." />
         </div>
 
         <!-- Navbar -->
         @include('admin.layouts.navbar')
         <!-- /.navbar -->
-
         <!-- Main Sidebar Container -->
-        @include('admin.layouts.sidebar')
+        @if(Route::is('admin.wikiBlogView'))
+            @include('admin.layouts.wikisidebar')
+        @else
+            @include('admin.layouts.sidebar')
+        @endif
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
@@ -197,11 +228,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <script src="{{ asset('public/js/admin/customUserRole.js') }}"></script>
         <script type="text/javascript">
             function loadNotificationsDropdownMenu(){
-                $('#Notifications-Dropdown-Menu').load("{{ route('admin.notifications-dropdown-menu') }}");
+                if($('.dropdown-menu').is(":visible")==false){
+                   $('#Notifications-Dropdown-Menu').load("{{ route('admin.notifications-dropdown-menu') }}"); 
+                }
             }
             loadNotificationsDropdownMenu();
             setInterval(function(){
-                //loadNotificationsDropdownMenu();
+                loadNotificationsDropdownMenu();
             }, 10000);
         </script>
 
