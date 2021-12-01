@@ -39,13 +39,18 @@ class AttendanceController extends Controller
      */
     public function index()
     {
-        if(!auth()->user()->hasRole('superadmin')){
+        if(auth()->user()->hasRole('superadmin')){
+            $branches = Branch::all();
+            $users = User::all();
+        }elseif(auth()->user()->hasRole('Team Leader')){
+            $branch_id = auth()->user()->getBranchIdsAttribute();
+            $branches = Branch::whereIn('id',$branch_id)->get();
+            $child_id = auth()->user()->children()->pluck('id')->toArray();
+            $users = User::whereIn('id', $child_id)->get();
+        }else{
             $branch_id = auth()->user()->getBranchIdsAttribute();
             $branches = Branch::whereIn('id',$branch_id)->get();
             $users = User::whereHas('branches', function($q) use ($branch_id) { $q->whereIn('branch_id', $branch_id); })->get();
-        }else{
-            $branches = Branch::all();
-            $users = User::all();
         }
         return view('admin.attendance.index', compact("users","branches"));
     }
@@ -62,12 +67,23 @@ class AttendanceController extends Controller
         if ($request->ajax() == true) {
 
             
-            if(!auth()->user()->hasRole('superadmin')){
+            /*if(!auth()->user()->hasRole('superadmin')){
                 $branch_id = auth()->user()->getBranchIdsAttribute();
                 $model = Attendance::where('status','punch_in')->with('branch','creator','editor','punch_out')->whereHas('branch', function($q) use ($branch_id) { 
                                             $q->whereIn('branch_id', $branch_id); });
             }else{
                $model = Attendance::where('status','punch_in')->with('branch','creator','editor','punch_out');
+            }*/
+
+            if(auth()->user()->hasRole('superadmin')){
+                $model = Attendance::where('status','punch_in')->with('branch','creator','editor','punch_out');
+            }elseif(auth()->user()->hasRole('Team Leader')){
+                $child_id = auth()->user()->children()->pluck('id')->toArray();
+                $model = Attendance::where('status','punch_in')->whereIn('created_by',$child_id)->with('branch','creator','editor','punch_out');
+            }else{
+                $branch_id = auth()->user()->getBranchIdsAttribute();
+                $model = Attendance::where('status','punch_in')->with('branch','creator','editor','punch_out')->whereHas('branch', function($q) use ($branch_id) { 
+                                            $q->whereIn('branch_id', $branch_id); });
             }
             
             return Datatables::eloquent($model)
@@ -100,12 +116,24 @@ class AttendanceController extends Controller
                         
                         
                     })
-
+                    ->addColumn('total_hrs', function (Attendance $data) {
+                        if($data->punch_out==null){
+                            return 'To be continue..';
+                        }else{
+                            $startTime = Carbon::parse($data->attendance_at);
+                            $endTime = Carbon::parse($data->punch_out->attendance_at);
+                            $totalDuration =  $startTime->diff($endTime)->format('%H:%I:%S')." Minutes";
+                            return $totalDuration;
+                        }
+                        
+                        
+                    })
                     ->addColumn('branch', function (Attendance $data) {
                         return $data->branch->company->name.' - '.$data->branch->name;
                     })
 
                     ->addColumn('username', function (Attendance $data) {
+                        
                         return '<img src="'.$data->creator->getImageUrlAttribute($data->creator->id).'" alt="user_id_'.$data->creator->id.'" class="profile-user-img-small img-circle"> '. $data->creator->name;
                     })
                     

@@ -64,7 +64,7 @@
 
                             <div class="form-group col-md-3">
                                 <span>Search by activity date</span>
-                                <input class="search-area form-control" type="text" name="datefilter" id="daterange" value="" />  
+                                <input class="search-area form-control" type="text" name="datefilter" id="daterange" value=""  oninput="datatables()" />  
                             </div>
 
                             <div class="mt-4 form-group col-md-2">
@@ -75,14 +75,9 @@
                         <table class="table table-hover dataTable no-footer" id="table" width="100%">
                             <thead>
                             <tr>
-                                <th>Punch In</th>
-                                <th>Punch Out</th>
-                                <th>Company - Branch</th>
                                 <th>User Name</th>
-                                <th>Last Edit By</th>
-                                <th>Created At</th>
-                                <th>Updated At</th>
-                                <th class="noExport" width="100">Action</th>
+                                <th>Company - Branch</th>
+                                <th>Total Hrs.</th>
                                 <th class="noExport">User Id</th>
                                 <th class="noExport">ID</th>
                             </tr>
@@ -102,12 +97,12 @@
 
 <script>
 function datatables() {
-
+    var daterange = $( "#daterange" ).val();
     var table = $('#table').DataTable({
         dom: 'Rltipr',
         buttons: [],
         select: true,
-        aaSorting     : [[5, 'desc']],
+        aaSorting     : [[2, 'desc']],
         iDisplayLength: 25,
         stateSave     : true,
         responsive    : true,
@@ -118,23 +113,16 @@ function datatables() {
         pagingType    : "full_numbers",
         "bLengthChange": false,
         ajax          : {
-            url     : '{{ url('admin/attendance/ajax/data') }}',
-            dataType: 'json'
+            url     : '{{ url('admin/report/ajax/data') }}',
+            dataType: 'json',
+            data: {
+                    "daterange": daterange
+                },
         },
         columns       : [
-            {data: 'punch_in', name: 'punch_in'},
-            {data: 'punch_out', name: 'punch_out'},
-            {data: 'branch', name: 'branch'},
             {data: 'username', name: 'username'},
-            {data: 'editor', name: 'editor'},
-            {data: 'created_at', name: 'created_at', visible: false},
-            {data: 'updated_at', name: 'updated_at', visible: false},
-            {data: 'action', name: 'action', orderable: false, searchable: false,
-                fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-                    $("a", nTd).tooltip({container: 'body'});
-                }
-            },
-
+            {data: 'branch', name: 'branch'},
+            {data: 'total_hrs', name: 'total_hrs'},
             {data: 'search_username', name: 'search_username', visible: false},
             {data: 'id', name: 'id', visible: false}
         ],
@@ -142,7 +130,7 @@ function datatables() {
 
     $('#user_id').on('change', function () {
         if(this.value != 'All'){
-            table.columns(8).search( this.value ).draw();
+            table.columns(3).search( this.value ).draw();
         }else{
             table.search( '' ).columns().search( '' ).draw();
         }
@@ -150,7 +138,7 @@ function datatables() {
 
     $('#branch').on('change', function () {
         if(this.value != 'All'){
-            table.columns(2).search( this.value ).draw();
+            table.columns(1).search( this.value ).draw();
         }else{
             table.search( '' ).columns().search( '' ).draw();
         }
@@ -164,23 +152,7 @@ function datatables() {
             $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
             minDateFilter = Date.parse(picker.startDate);
             maxDateFilter = Date.parse(picker.endDate);
-
-            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                var date = Date.parse(data[5]);
-
-                if (
-                (isNaN(minDateFilter) && isNaN(maxDateFilter)) ||
-                (isNaN(minDateFilter) && date <= maxDateFilter) ||
-                (minDateFilter <= date && isNaN(maxDateFilter)) ||
-                (minDateFilter <= date && date <= maxDateFilter)
-                ) {
-                    return true;
-                }
-                
-                return false;
-            });
-            table.draw();
-
+            datatables();
             if(this.value == ''){
                 table.search( '' ).columns().search( '' ).draw();
             }
@@ -218,8 +190,5 @@ $("#branch").select2({
 });
 
 </script>
-
-
-    
 
 @endsection

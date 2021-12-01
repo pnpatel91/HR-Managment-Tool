@@ -77,6 +77,7 @@
                             <tr>
                                 <th>Punch In</th>
                                 <th>Punch Out</th>
+                                <th>Total Hrs.</th>
                                 <th>Company - Branch</th>
                                 <th>User Name</th>
                                 <th>Last Edit By</th>
@@ -124,6 +125,7 @@ function datatables() {
         columns       : [
             {data: 'punch_in', name: 'punch_in'},
             {data: 'punch_out', name: 'punch_out'},
+            {data: 'total_hrs', name: 'total_hrs'},
             {data: 'branch', name: 'branch'},
             {data: 'username', name: 'username'},
             {data: 'editor', name: 'editor'},
@@ -142,7 +144,7 @@ function datatables() {
 
     $('#user_id').on('change', function () {
         if(this.value != 'All'){
-            table.columns(8).search( this.value ).draw();
+            table.columns(9).search( this.value ).draw();
         }else{
             table.search( '' ).columns().search( '' ).draw();
         }
@@ -150,7 +152,7 @@ function datatables() {
 
     $('#branch').on('change', function () {
         if(this.value != 'All'){
-            table.columns(2).search( this.value ).draw();
+            table.columns(3).search( this.value ).draw();
         }else{
             table.search( '' ).columns().search( '' ).draw();
         }
@@ -166,7 +168,7 @@ function datatables() {
             maxDateFilter = Date.parse(picker.endDate);
 
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                var date = Date.parse(data[5]);
+                var date = Date.parse(data[6]);
 
                 if (
                 (isNaN(minDateFilter) && isNaN(maxDateFilter)) ||

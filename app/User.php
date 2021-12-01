@@ -71,7 +71,7 @@ class User extends Authenticatable
     }
 
     public function getImageUrlAttribute($id = null)
-    {
+    {   
         if(empty($id)){
             $id = auth()->user()->id;
         }
@@ -111,14 +111,14 @@ class User extends Authenticatable
      * Get the creator of this attendance with branch.
      */
     public function attendance_creator(){
-        return $this->belongsTo(Attendance::class,'created_by')->with('branch');
+        return $this->hasMany(Attendance::class,'created_by')->with('branch','punch_out');
     }
 
     /**
      * Get the last editor of this attendance with branch.
      */
     public function attendance_editor(){
-        return $this->belongsTo(Attendance::class,'updated_by')->with('branch');
+        return $this->hasMany(Attendance::class,'updated_by')->with('branch','punch_out');
     }
 
     /**

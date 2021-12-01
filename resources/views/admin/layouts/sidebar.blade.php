@@ -62,6 +62,15 @@
                                 </li>
                                 @endcan
 
+                                @can('view attendance')
+                                <li class="nav-item">
+                                    <a href="{{ url('admin/report/employee_daily_summary') }}" class="nav-link {{ Route::is('admin.report.employee_daily_summary')  ? 'active' : '' }}">
+                                        <i class="fa fa-clock-o  nav-icon" aria-hidden="true"></i>
+                                        <p>Report - Employee Daily Summary</p>
+                                    </a>
+                                </li>
+                                @endcan
+
                                 @can('view leave - admin')
                                 <li class="nav-item">
                                     <a href="{{ url('admin/leave') }}" class="nav-link {{ Route::is('admin.leave.*')  ? 'active' : '' }}">

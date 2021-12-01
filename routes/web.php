@@ -89,6 +89,10 @@ Route::group([
     Route::get('attendance/ajax/data', 'AttendanceController@datatables'); // For Datatables
     Route::post( 'attendance/ajax/status', 'AttendanceController@status' )->name('attendance.ajax.status'); // Get status option by branch in ajax
 
+    //Report Routes
+    Route::get('report/employee_daily_summary', 'ReportController@employee_daily_summary')->name('report.employee_daily_summary');
+    Route::get('report/ajax/data', 'ReportController@datatables'); // For Datatables
+
     
 
     // Department Routes
