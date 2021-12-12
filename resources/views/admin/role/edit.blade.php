@@ -24,7 +24,7 @@
                                 class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>Permission: </label>
+                            <label>Permission: </label> &nbsp; &nbsp;<input type="checkbox" id="checkbox_permission" > &nbsp;Select All
                         </div>
                         <div class="row">
                             @foreach ($permissions as $permission)
@@ -37,7 +37,7 @@
                                         class="form-check-input">
                                     <label class="form-check-label {{ $permission->isDeleteLabel() }}"
                                         for="{{ Str::slug($permission->name) }}">
-                                        {{ Str::title($permission->name) }}
+                                        {{ Str::title($permission->display_name) }}
                                     </label>
                                 </div>
                             </div>
@@ -64,5 +64,13 @@
             }
         }); //valdate end
     }); //function end
+
+    $("#checkbox_permission").click(function(){
+        if($("#checkbox_permission").is(':checked') ){
+            $('input:checkbox').prop('checked',true);
+        }else{
+            $('input:checkbox').prop('checked',false);
+        }
+    });
 </script>
 @endsection

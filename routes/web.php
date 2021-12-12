@@ -147,5 +147,10 @@ Route::group([
     Route::post( 'wikiBlogView/ajax/search', 'WikiBlogsViewController@search' )->name('wikiBlogView.ajax.search'); 
 
 
+    // Project Category Routes
+    Route::resource('projectCategory', 'ProjectCategoriesController')->parameters(['projectCategory' => 'projectCategory']);
+    Route::get('projectCategory/ajax/change_status', 'ProjectCategoriesController@change_status')->name('projectCategory.ajax.change_status'); // For change status
+
+
 });
 

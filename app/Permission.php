@@ -69,6 +69,16 @@ class Permission extends ModelsPermission
             'create Wiki Category',
             'edit Wiki Category',
             'delete Wiki Category',
+
+            'view Wiki Blog',
+            'create Wiki Blog',
+            'edit Wiki Blog',
+            'delete Wiki Blog',
+
+            'view Project Category',
+            'create Project Category',
+            'edit Project Category',
+            'delete Project Category',
         ];
     }
 

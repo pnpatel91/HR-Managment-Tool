@@ -22,16 +22,16 @@
                             <input type="text" name="name" class="form-control" required autocomplete="name" autofocus maxlength="200">
                         </div>
                         <div class="form-group">
-                            <label>Permission: </label>
+                            <label>Permission: </label> &nbsp; &nbsp;<input type="checkbox" id="checkbox_permission" > &nbsp;Select All
                         </div>
                         <div class="row">
-                            @foreach ($permissions as $id => $name)
+                            @foreach ($permissions as $permission)
                             <div class="col-md-3">
                                 <div class="form-group form-check">
-                                    <input type="checkbox" name="permission[]" value="{{ $id }}"
-                                        id="{{ Str::slug($name) }}"
+                                    <input type="checkbox" name="permission[]" value="{{ $permission->id }}"
+                                        id="{{ Str::slug($permission->name) }}"
                                         class="form-check-input">
-                                    <label class="form-check-label" for="{{ Str::slug($name) }}">{{ Str::title($name) }}</label>
+                                    <label class="form-check-label" for="{{ Str::slug($permission->name) }}">{{ Str::title($permission->display_name) }}</label>
                                 </div>
                             </div>
                             @endforeach
@@ -55,5 +55,13 @@
             }
         }); //valdate end
     }); //function end
+
+    $("#checkbox_permission").click(function(){
+        if($("#checkbox_permission").is(':checked') ){
+            $('input:checkbox').prop('checked',true);
+        }else{
+            $('input:checkbox').prop('checked',false);
+        }
+    });
 </script>
 @endsection
